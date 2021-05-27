@@ -4,10 +4,9 @@ module.exports.config = {
     hasPermssion: 0,
     credits: "MewMew",
     description: "Chơi nối từ với bot or thành viên trong nhóm",
-    commandCategory: "game-mp",
+    commandCategory: "game",
     usages: "linkword",
     cooldowns: 5,
-    dependencies: ["axios"],
     info: [
         {
             key: 'none',
@@ -29,8 +28,12 @@ module.exports.event = async function({ api, event, global }) {
     let { body: content, threadID, messageID } = event;
     if (global.linkword.has(threadID)) {
         if (content && content.split(" ").length == 2) {
-            var data = (await axios.get("http://simsimi.miraiproject.tk/api/linkword?ask=" + encodeURIComponent(content))).data;
-            return api.sendMessage(data.text, threadID, messageID);
+            var data = (await axios.get("https://simsimi.miraiproject.tk/api/linkword?ask=" + encodeURIComponent(content))).data;
+            if (data.text == "You Lose!") {
+                global.linkword.delete(threadID);
+                return api.sendMessage(data.text, threadID, messageID);
+            }
+            else return api.sendMessage(data.text, threadID, messageID);
         }
     }
 }
